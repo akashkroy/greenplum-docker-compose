@@ -1,0 +1,46 @@
+version: '3.5'
+
+services:
+    db_master:
+      build: .
+      container_name: db_master
+      ports:
+        - "5432:5432"
+      privileged: true
+      hostname: db_master
+      volumes:
+        - db_master_1:/var/lib/gpdb/
+      environment:
+        - GP_NODE=master
+        - HOSTFILE=multihost
+      healthcheck:
+        test: grep -r -i --include \*.log "Database successfully started" || exit 1
+    
+    db_seg_1:
+      container_name: db_seg_1
+      build: .
+      privileged: true
+      hostname: db_seg_1
+      volumes:
+        - db_seg_1:/var/lib/gpdb/
+      environment:
+        - GP_NODE=segment
+      healthcheck:
+        test: grep -r -i --include \*.log "Database successfully started" || exit 1
+
+    db_seg_2:
+      container_name: db_seg_2
+      build: .
+      privileged: true
+      hostname: db_seg_2
+      volumes:
+        - db_seg_2:/var/lib/gpdb/
+      environment:
+        - GP_NODE=segment
+      healthcheck:
+        test: grep -r -i --include \*.log "Database successfully started" || exit 1
+
+volumes:
+  db_master_1:
+  db_seg_1:
+  db_seg_2:
